@@ -27,7 +27,7 @@ fun getShortDate(time: Long): String? {
     val isWithin24Hours = System.currentTimeMillis() - date.time <= TimeUnit.DAYS.toMillis(1)
 
     return if (isWithin24Hours) {
-        DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
+        DateFormat.getTimeInstance(DateFormat.MEDIUM).format(date)
     } else {
         DateFormat.getDateInstance(DateFormat.SHORT).format(date)
     }
@@ -39,9 +39,9 @@ fun getShortDateTime(time: Long): String {
     val isWithin24Hours = System.currentTimeMillis() - date.time <= TimeUnit.DAYS.toMillis(1)
 
     return if (isWithin24Hours) {
-        DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
+        DateFormat.getTimeInstance(DateFormat.MEDIUM).format(date)
     } else {
-        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(date)
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date)
     }
 }
 
