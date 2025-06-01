@@ -51,12 +51,14 @@ import androidx.compose.ui.unit.dp
 import com.geeksville.mesh.DataPacket
 import com.geeksville.mesh.MessageStatus
 import com.geeksville.mesh.R
+import com.geeksville.mesh.MeshProtos
 import com.geeksville.mesh.model.Node
 import com.geeksville.mesh.ui.common.components.AutoLinkText
 import com.geeksville.mesh.ui.common.preview.NodePreviewParameterProvider
 import com.geeksville.mesh.ui.common.theme.AppTheme
 import com.geeksville.mesh.ui.node.components.NodeChip
 import com.geeksville.mesh.ui.node.components.NodeMenuAction
+import com.geeksville.mesh.ui.message.components.SignalStrengthIndicator
 
 @Suppress("LongMethod", "CyclomaticComplexMethod")
 @OptIn(ExperimentalFoundationApi::class)
@@ -92,6 +94,7 @@ internal fun MessageItem(
     } else {
         Modifier.padding(start = 8.dp, top = 8.dp, end = 0.dp, bottom = 6.dp)
     }
+
     if (!fromLocal) {
         NodeChip(
             node = node,
@@ -102,6 +105,7 @@ internal fun MessageItem(
             isThisNode = false,
         )
     }
+    
     Card(
         modifier = Modifier
             .weight(1f)
@@ -141,6 +145,12 @@ internal fun MessageItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    if (!fromLocal && node.snr != 0f) {
+                        SignalStrengthIndicator(
+                            snr = node.snr,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
                     Text(
                         text = messageTime,
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
@@ -174,13 +184,29 @@ internal fun MessageItem(
 @Composable
 private fun MessageItemPreview() {
     AppTheme {
-        MessageItem(
-            node = NodePreviewParameterProvider().values.first(),
-            messageText = stringResource(R.string.sample_message),
-            messageTime = "10:00",
-            messageStatus = MessageStatus.DELIVERED,
-            selected = false,
-            isConnected = true,
-        )
+        Column {
+            // Mensaje recibido (con SNR)
+            MessageItem(
+                node = NodePreviewParameterProvider().values.first(),
+                messageText = stringResource(R.string.sample_message),
+                messageTime = "10:00",
+                messageStatus = null,
+                selected = false,
+                isConnected = true,
+            )
+            
+            // Mensaje local
+            MessageItem(
+                node = Node(
+                    num = 0,
+                    user = MeshProtos.User.newBuilder().setId(DataPacket.ID_LOCAL).build(),
+                ),
+                messageText = stringResource(R.string.sample_message),
+                messageTime = "10:01",
+                messageStatus = MessageStatus.DELIVERED,
+                selected = false,
+                isConnected = true,
+            )
+        }
     }
 }
